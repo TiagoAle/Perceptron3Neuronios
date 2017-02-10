@@ -29,17 +29,26 @@ while(epoca < 100)
     u = w'*X(j,:)';
     u = u';
     
-    for i = 1:3
-        if(u(:,i)> 0)
-           Y(j,i) = 1;
-        else
-          Y(j,i) = 0;
-        end
+    if(u(:,1)> u(:,2) && u(:,1) > u(:,3))
+        Y(j,1) = 1;
+        Y(j,2) = 0;
+        Y(j,3) = 0;
+    elseif (u(:,2)> u(:,3))
+        Y(j,1) = 0;
+        Y(j,2) = 1;
+        Y(j,3) = 0;
+    else
+        Y(j,1) = 0;
+        Y(j,2) = 0;
+        Y(j,3) = 1;
     end
     
     erro = D-Y;
     w = w +txAprendizado*X'*erro;
     erroEpoca = sum(sum(abs(erro)));
+  end
+  if(erroEpoca < 5)
+      break;
   end
   epoca = epoca + 1;
 end
