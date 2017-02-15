@@ -3,31 +3,35 @@ clear all;
 close all;
 
 B = load('iris.data');
+B = B(randperm(size(B,1)),:);
 
-D = B(:,5:7);
-X = B(:,1:4);
+treinamento = B(1:120,:);
+teste = B(121:150,:);
 
-[nPadroes, nEntradas] = size(X);
+nPadroes = 120;
+nEntradas = 5;
 
 txAprendizado = 0.1;
-w = rand(nEntradas+1,3);
+w = zeros(5,3);
 bias = repmat(-1,nPadroes,1);
-minX = repmat(min(X),nPadroes,1);
-maxX = repmat(max(X),nPadroes,1);
-X = (X - minX)./(maxX - minX);
-X = [bias X];
 
-erroEpoca = 31;
+%X = randperm(X,1);
+
+treinamento = [bias treinamento];
+teste = [bias(1:30) teste];
+
+erroEpoca = 0;
 epoca = 0;
 Y = zeros(nPadroes,3);
 
 while(epoca < 100)
-  
+  %Y = zeros(nPadroes,3);
+  D = treinamento(:,6:8);
+  X = treinamento(:,1:5);
   erroEpoca = 0;
   
   for j = 1:nPadroes
-    u = w'*X(j,:)';
-    u = u';
+    u = X(j,:)*w;
     
     for i = 1:3
         if(u(:,i)> 0)
@@ -38,10 +42,16 @@ while(epoca < 100)
     end
     
     erro = D-Y;
-    w = w +txAprendizado*X'*erro;
+    erro(j,:)
+    w = w +txAprendizado*X(j,:)'*erro(j,:);
+    
     erroEpoca = sum(sum(abs(erro)));
   end
   epoca = epoca + 1;
+  if (erroEpoca < 5)
+      break;
+  end
+  %treinamento = treinamento(randperm(size(treinamento,1)),:);
 end
 
 disp('Treinamento do Perceptron (AND)');
@@ -54,10 +64,5 @@ disp(['w2:     ',num2str(w(3,:))]);
 disp(['w3:     ',num2str(w(4,:))]);
 disp(['w4:     ',num2str(w(5,:))]);
 disp(' ');
-disp('Teste para os pesos encontrados: ')
-for j=1:4
-    disp(['X1 = ',num2str(X(j,1)),' X2 = ',num2str(X(j,2)),...
-        ' Yobtido = ',num2str(Y(j)),' Ydesejado = ',num2str(D(j))]);
-end
 
     
