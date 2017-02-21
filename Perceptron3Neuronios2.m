@@ -4,22 +4,27 @@ close all;
 
 B = load('iris.data');
 
-D = B(:,5:7);
-X = B(:,1:4);
+treinamento = B(1:120,:);
+teste = B(121:150,:);
 
-[nPadroes, nEntradas] = size(X);
+nPadroes = 120;
+nEntradas = 5;
 
 txAprendizado = 0.1;
-w = rand(nEntradas+1,3);
+w = rand(nEntradas,3);
 bias = repmat(-1,nPadroes,1);
-minX = repmat(min(X),nPadroes,1);
-maxX = repmat(max(X),nPadroes,1);
-X = (X - minX)./(maxX - minX);
-X = [bias X];
+%minX = repmat(min(X),nPadroes,1);
+%maxX = repmat(max(X),nPadroes,1);
+%X = (X - minX)./(maxX - minX);
+treinamento = [bias treinamento];
+teste = [bias(1:30) teste];
 
 erroEpoca = 31;
 epoca = 0;
 Y = zeros(nPadroes,3);
+
+D = treinamento(:,6:8);
+X = treinamento(:,1:5);
 
 while(epoca < 100)
   
@@ -28,6 +33,8 @@ while(epoca < 100)
   for j = 1:nPadroes
     u = w'*X(j,:)';
     u = u';
+    
+    u = sigmf(u, [1 0]);
     
     if(u(:,1)> u(:,2) && u(:,1) > u(:,3))
         Y(j,1) = 1;
@@ -53,20 +60,26 @@ while(epoca < 100)
   epoca = epoca + 1;
 end
 
-disp('Treinamento do Perceptron (AND)');
-disp('Resultados do Treinamento');
-disp(' ');
-disp(['Épocas: ',num2str(epoca)]);
-disp(['w0:   ',num2str(w(1,:))]);
-disp(['w1:     ',num2str(w(2,:))]);
-disp(['w2:     ',num2str(w(3,:))]);
-disp(['w3:     ',num2str(w(4,:))]);
-disp(['w4:     ',num2str(w(5,:))]);
-disp(' ');
-disp('Teste para os pesos encontrados: ')
-for j=1:4
-    disp(['X1 = ',num2str(X(j,1)),' X2 = ',num2str(X(j,2)),...
-        ' Yobtido = ',num2str(Y(j)),' Ydesejado = ',num2str(D(j))]);
-end
-
+Dteste = teste(:,6:8);
+Xteste = teste(:,1:5);
+erroTeste = 0;
+YTeste = zeros(30,3);
+for j = 1:30
+    u = Xteste(j,:)*w;
     
+    y = sigmf(u, [1 0]);
+    YTeste(j,:)
+    if y(1) > y(2) && y(1) > y(3)
+          YTeste(j,:) = [1 0 0];
+    elseif y(2) > y(3)
+           YTeste(j,:) = [0 1 0];
+    else
+           YTeste(j,:) = [0 0 1];
+    end
+    YTeste(j,:)
+    error(j,:) = Dteste(j,:)-YTeste(j,:);
+    e = sum(abs(error(j,:)));
+    if(e ~= 0)
+        erroTeste = erroTeste + 1;
+    end 
+end

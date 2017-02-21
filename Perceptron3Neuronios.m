@@ -71,7 +71,18 @@ for j = 1:30
           YTeste(j,i) = 0;
         end
     end
-    
+    if(sum(u)> 1)
+       y = sigmf(u, [1 0]);
+       YTeste(j,:)
+       if y(1) > y(2) && y(1) > y(3)
+           YTeste(j,:) = [1 0 0];
+       elseif y(2) > y(3)
+           YTeste(j,:) = [0 1 0];
+       else
+           YTeste(j,:) = [0 0 1];
+       end
+       YTeste(j,:)
+    end
     error(j,:) = Dteste(j,:)-YTeste(j,:);
     e = sum(abs(error(j,:)));
     if(e ~= 0)
